@@ -2,6 +2,7 @@ package com.epex.koinbot.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
@@ -11,7 +12,7 @@ import java.math.BigDecimal;
 public class CurrencyPortfolio {
 
     @Id
-    private long id;
+    private ObjectId id;
 
     private BigDecimal highest_bid;
 
