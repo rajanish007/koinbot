@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpServerErrorException;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/base")
 public class BaseRestController {
@@ -21,8 +23,8 @@ public class BaseRestController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/generate")
     @ResponseBody
-    public CurrencyPortfolio generatePortfolio(@RequestParam(name = "type") Currency currency) {
-        CurrencyPortfolio currencyPortfolio;
+    public List<CurrencyPortfolio> generatePortfolio(@RequestParam(name = "type", required = false) Currency currency) {
+        List<CurrencyPortfolio> currencyPortfolio;
         try {
             currencyPortfolio = portfolioHandler.GeneratePortfolio(currency);
         } catch (Exception e) {

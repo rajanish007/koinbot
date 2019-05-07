@@ -29,5 +29,5 @@ public enum Currency {
     BCHABC,
     TUSD,
     BSV,
-    BTT
+    BTT,
 }

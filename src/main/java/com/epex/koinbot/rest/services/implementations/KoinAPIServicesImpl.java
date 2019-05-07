@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class KoinAPIServicesImpl implements KoinAPIServices {
 
@@ -20,21 +23,25 @@ public class KoinAPIServicesImpl implements KoinAPIServices {
 
     private final Logger logger = LoggerFactory.getLogger(KoinAPIServices.class);
 
-    private final String koinURL = "https://koinex.in/api/ticker";
+    private static final String koinURL = "https://koinex.in/api/ticker";
 
 
     @Override
-    public CurrencyPortfolio getCurrencyPortfolioFor(Currency currency){
-        CurrencyPortfolio currencyPortfolio = null;
+    public List<CurrencyPortfolio> getCurrencyPortfolioFor(Currency currency) {
+        List<CurrencyPortfolio> currencyPortfolios = new ArrayList();
         try {
             String response = http.sendGet(koinURL);
-            currencyPortfolio = extractAndConvertPortfolioForCurrency(currency, response);
-            return currencyPortfolio;
+            if (currency != null) {
+                currencyPortfolios.add(extractAndConvertPortfolioForCurrency(currency, response));
+            } else {
+                currencyPortfolios.addAll(extractAndConvertPortfolioForAllCurrency(response));
+            }
+            return currencyPortfolios;
         } catch (Exception e) {
             logger.error("Unable to parse response !");
             e.printStackTrace();
         }
-        return currencyPortfolio;
+        return currencyPortfolios;
     }
 
     private CurrencyPortfolio extractAndConvertPortfolioForCurrency(Currency currency, String response) throws Exception {
@@ -45,5 +52,19 @@ public class KoinAPIServicesImpl implements KoinAPIServices {
         JSONObject inrObj = (JSONObject) statsObj.get("inr");
         JSONObject currencyObj = (JSONObject) inrObj.get(currency.name());
         return objectMapper.readValue(currencyObj.toJSONString(), CurrencyPortfolio.class);
+    }
+
+    private List<CurrencyPortfolio> extractAndConvertPortfolioForAllCurrency(String response) throws Exception {
+        List<CurrencyPortfolio> currencyPortfolios = new ArrayList();
+        JSONParser parser = new JSONParser();
+        ObjectMapper objectMapper = new ObjectMapper();
+        JSONObject jsonObj = (JSONObject) parser.parse(response);
+        JSONObject statsObj = (JSONObject) jsonObj.get("stats");
+        JSONObject inrObj = (JSONObject) statsObj.get("inr");
+        for (Currency c : Currency.values()) {
+            JSONObject currencyObj = (JSONObject) inrObj.get(c.name());
+            currencyPortfolios.add(objectMapper.readValue(currencyObj.toJSONString(), CurrencyPortfolio.class));
+        }
+        return currencyPortfolios;
     }
 }
