@@ -4,12 +4,12 @@ public interface KoinBeatService {
 
     void beatEvery20Seconds();
 
-    //void beatEvery30Seconds();
+    void beatEvery30Seconds();
 
-    //void beatEvery60Seconds();
+    void beatEvery60Seconds();
 
-    //void beatEvery2Minutes();
+    void beatEvery2Minutes();
 
-    //void beatEvery5Minutes();
+    void beatEvery5Minutes();
 
 }
